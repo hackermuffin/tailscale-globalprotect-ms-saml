@@ -26,5 +26,6 @@ services:
       EMAIL: ${EMAIL}
       PASSWORD: ${PASSWORD}
       OTP_SECRET: ${OTP_SECRET}
+      DEBUG: 0
 
 

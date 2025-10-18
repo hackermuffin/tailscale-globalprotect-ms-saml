@@ -6,6 +6,8 @@ import requests
 import subprocess
 import time
 
+# Setup debug mode if applicable
+DEBUG = os.getenv("DEBUG") == "1"
 
 ### Helper functions ###
 
@@ -308,15 +310,22 @@ def full_login() -> dict[str, str]:
     # Use the same token for the whole flow
     otp = get_otp()
 
+    if DEBUG:
+        print("Starting MS auth")
+
     otp_begin_data = otp_begin_auth(
         password_login_data["ctx"], password_login_data["flow_token"]
     )
+    if DEBUG:
+        print("Starting MS auth end")
     otp_end_data = otp_end_auth(
         session_id=session_data["request_id"],
         ctx=otp_begin_data["ctx"],
         flow_token=otp_begin_data["flow_token"],
         otp=otp,
     )
+    if DEBUG:
+        print("Starting MS auth process")
     otp_process_data = otp_process_auth(
         username=get_username(),
         otp=otp,
@@ -325,6 +334,8 @@ def full_login() -> dict[str, str]:
         flow_token=otp_end_data["flow_token"],
         canary=password_login_data["canary"],
     )
+    if DEBUG:
+        print("MS auth finished")
 
     # Submit saml to globalprotect
     gp_credentials = submit_saml(
@@ -332,6 +343,9 @@ def full_login() -> dict[str, str]:
         otp_process_data["SAMLResponse"],
         otp_process_data["RelayState"],
     )
+
+    if DEBUG:
+        print(f"GP Credentials: {gp_credentials}")
 
     return {
         "username": gp_credentials["saml_username"],
