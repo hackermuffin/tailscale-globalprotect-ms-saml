@@ -15,5 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Setup script
 COPY ./main.py ./
 
+COPY ./openssl.conf /openssl.conf
+ENV OPENSSL_CONF="/openssl.conf"
+
 # Setup wrapper script
 ENTRYPOINT [ "python", "-u", "/usr/src/app/main.py" ]
